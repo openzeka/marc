@@ -1,0 +1,9 @@
+<!-- -*- mode: XML -*- -->
+
+<launch>
+
+  <include file="$(find racecar_gazebo)/launch/racecar_tunnel.launch"/>
+
+  <include file="$(find racecar_control)/launch/teleop.launch"/>
+
+</launch>
