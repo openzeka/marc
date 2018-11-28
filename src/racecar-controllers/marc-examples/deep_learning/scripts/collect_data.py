@@ -38,7 +38,9 @@ class seyir_logger:
                     break
 
             self.path = dname+'/'
+            self.file_name = self.path + '/training_data.npy'
             self.index = 0
+            self.training_data = np.array([0,0,0])
             self.speed = None
             self.angle = None
             self.cv2_img = None
@@ -76,6 +78,10 @@ class seyir_logger:
                     if self.debug:
                         cv2.imshow('Image', self.cv2_img)
                     k = cv2.waitKey(10)
+                    generated_data = np.array(['%05d.jpg'%self.index,self.speed,self.angle])
+                    self.training_data = np.vstack((self.training_data, generated_data))
+
+                    np.save(self.file_name, self.training_data)
                     cv2.imwrite(fname,self.cv2_img)
                 self.index += 1
                 

@@ -29,7 +29,7 @@ class BaseClass(object):
         self.rate = rospy.Rate(20)
         self.index = 0
         self.image = None
-        self.cropped_pixel_from_top=100
+        self.cropped_pixel_from_top = 100
         self.model_name = '/home/nvidia/openzeka-marc/src/racecar-controllers/deep_learning/scripts/model_new'
         self.model = self.nn_model()
         rospy.Subscriber('/zed/right/image_rect_color', Image, self.zed_callback, queue_size=1)
