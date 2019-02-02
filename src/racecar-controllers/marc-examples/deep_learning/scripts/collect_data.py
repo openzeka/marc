@@ -44,7 +44,7 @@ class seyir_logger:
             self.speed = None
             self.angle = None
             self.cv2_img = None
-            self.zed_camera = rospy.Subscriber('/zed/left/image_rect_color/compressed', CompressedImage, self.zed_callback)
+            self.zed_camera = rospy.Subscriber('/zed/right/image_rect_color', Image, self.zed_callback)
             self.sub = rospy.Subscriber('/ackermann_cmd', AckermannDriveStamped, self.drive_call, queue_size=1)
             self.rate = rospy.Rate(20)
             self.debug = False
@@ -57,37 +57,37 @@ class seyir_logger:
         
         def zed_callback(self,data):
             try:
-                np_arr = np.fromstring(data.data, np.uint8)
-                self.cv2_img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-                #self.cv2_img = cv2.resize(self.cv2_img,(720,480),interpolation=cv2.INTER_AREA)
-                #self.cv2_img = bridge.imgmsg_to_cv2(data, "bgr8")
+                self.cv2_img = bridge.imgmsg_to_cv2(data, "bgr8")
+                self.cv2_img = cv2.resize(self.cv2_img,(720,480),interpolation=cv2.INTER_AREA)
+                try:
+                
+                    if self.cv2_img is None:
+                        print('Camera could not detected!')
+                    if self.speed is None:
+                        print('Speed could not detected!')
+                    if self.angle is None:
+                        print('Angle could not detected!')
+
+                    if not self.cv2_img is None and not self.speed is None and not self.angle is None:
+                        fname = self.path+'%05d.jpg'%self.index
+                        if self.debug:
+                            cv2.imshow('Image', self.cv2_img)
+                        k = cv2.waitKey(10)
+                        generated_data = np.array(['%05d.jpg'%self.index,self.speed,self.angle])
+                        self.training_data = np.vstack((self.training_data, generated_data))
+
+                        np.save(self.file_name, self.training_data)
+                        cv2.imwrite(fname,self.cv2_img)
+                    self.index += 1
+                    
+                except Exception,e:
+                    print('Hang on a sec...',e)
+                    pass
+                
             except CvBridgeError, e:
                 print(e)
-        def write(self):
-            try:
-                
-                if self.cv2_img is None:
-                    print('Camera could not detected!')
-                if self.speed is None:
-                    print('Speed could not detected!')
-                if self.angle is None:
-                    print('Angle could not detected!')
-
-                if not self.cv2_img is None and not self.speed is None and not self.angle is None:
-                    fname = self.path+'%05d.jpg'%self.index
-                    if self.debug:
-                        cv2.imshow('Image', self.cv2_img)
-                    k = cv2.waitKey(10)
-                    generated_data = np.array(['%05d.jpg'%self.index,self.speed,self.angle])
-                    self.training_data = np.vstack((self.training_data, generated_data))
-
-                    np.save(self.file_name, self.training_data)
-                    cv2.imwrite(fname,self.cv2_img)
-                self.index += 1
-                
-            except Exception,e:
-                print('Hang on a sec...',e)
-                pass
+	
+            
 def exit_gracefully(signal,frame):
     print('Exiting, wait for it...')
     sys.exit(0)
@@ -103,9 +103,9 @@ if __name__ == '__main__':
         #time.sleep(0.1)
         signal.signal(signal.SIGINT, exit_gracefully)
         if logger.speed != 0.0:
-            logger.write()
             logger.rate.sleep()
             print('Speed : ', logger.speed, ' Angle : ', logger.angle)
         else:
             print("Not moving")
+            time.sleep(.5)
     rospy.spin()
