@@ -49,6 +49,8 @@ find_package(catkin COMPONENTS
   nodelet
   tf2_geometry_msgs
   message_generation
+  diagnostic_updater
+  roslint
 )
 
 checkPackage("image_transport" "")
@@ -63,9 +65,15 @@ checkPackage("tf2_geometry_msgs" "")
 checkPackage("message_generation" "")
 
 add_service_files( FILES
-    set_initial_pose.srv
+    set_pose.srv
     reset_odometry.srv
     reset_tracking.srv
+    start_svo_recording.srv
+    stop_svo_recording.srv
+    start_remote_stream.srv
+    stop_remote_stream.srv
+    set_led_status.srv
+    toggle_led.srv
   )
 
 generate_messages()
@@ -91,7 +99,7 @@ catkin_package(
 # SOURCES
 
 set(TOOLS_SRC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/tools/src/sl_tools.cpp )
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/tools/src/sl_tools.cpp)
 set(NODE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/zed_wrapper_node.cpp)
 set(NODELET_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/nodelet/src/zed_wrapper_nodelet.cpp)
 
@@ -142,8 +150,11 @@ add_dependencies(zed_wrapper_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${PROJECT_
 
 #Add all files in subdirectories of the project in
 # a dummy_target so qtcreator have access to all files
-FILE(GLOB_RECURSE extra_files ${CMAKE_SOURCE_DIR}/*)
-add_custom_target(dummy_${PROJECT_NAME} SOURCES ${extra_files})
+FILE(GLOB_RECURSE all_files ${CMAKE_SOURCE_DIR}/*)
+add_custom_target(all_files_${PROJECT_NAME} SOURCES ${all_files})
+
+roslint_cpp()
+
 
 ###############################################################################
 # INSTALL
@@ -160,4 +171,5 @@ install(FILES
 install(DIRECTORY
   launch
   urdf
+  param
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

@@ -25,6 +25,7 @@
 #include <sensor_msgs/Image.h>
 #include <sl/Camera.hpp>
 #include <string>
+#include <vector>
 
 namespace sl_tools {
 
@@ -64,7 +65,56 @@ namespace sl_tools {
      */
     sensor_msgs::ImagePtr imageToROSmsg(sl::Mat img, std::string frameId, ros::Time t);
 
+    /* \brief Two sl::Mat to ros message conversion
+     * \param left : the left image to publish
+     * \param right : the right image to publish
+     * \param frameId : the id of the reference frame of the image
+     * \param t : the ros::Time to stamp the image
+     */
+    sensor_msgs::ImagePtr imagesToROSmsg(sl::Mat left, sl::Mat right, std::string frameId, ros::Time t);
 
-} // namespace
+    /* \brief String tokenization
+     */
+    std::vector<std::string> split_string(const std::string& s, char seperator);
 
-#endif // SL_TOOLS_H
+    /*!
+     * \brief The CSmartMean class is used to
+     * make a mobile window mean of a sequence of values
+     * and reject outliers.
+     * Tutorial:
+     * https://www.myzhar.com/blog/tutorials/tutorial-exponential-weighted-average-good-moving-windows-average/
+     */
+    class CSmartMean {
+      public:
+        CSmartMean(int winSize);
+
+        int getValCount() {
+            return mValCount;   ///< Return the number of values in the sequence
+        }
+
+        double getMean() {
+            return mMean;   ///< Return the updated mean
+        }
+
+        /*!
+         * \brief addValue
+         * Add a value to the sequence
+         * \param val value to be added
+         * \return mean value
+         */
+        double addValue(double val);
+
+      private:
+        int mWinSize; ///< The size of the window (number of values ti evaluate)
+        int mValCount; ///< The number of values in sequence
+
+        double mMeanCorr; ///< Used for bias correction
+        double mMean;     ///< The mean of the last \ref mWinSize values
+
+        double mGamma; ///< Weight value
+    };
+
+
+} // namespace sl_tools
+
+#endif  // SL_TOOLS_H
