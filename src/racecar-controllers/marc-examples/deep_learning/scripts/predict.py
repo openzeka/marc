@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 import numpy as np
 import cv2
 import matplotlib.pylab as plt
@@ -30,7 +33,10 @@ class BaseClass(object):
         self.index = 0
         self.image = None
         self.cropped_pixel_from_top = 100
-        self.model_name = '/home/nvidia/openzeka-marc/src/racecar-controllers/deep_learning/scripts/model_new'
+        self.graph_behavioral = tf.get_default_graph()
+        rospack = rospkg.RosPack()
+        self.package_path = rospack.get_path('deep_learning')
+        self.model_name = self.package_path + '/scripts/model_new'
         self.model = self.nn_model()
         rospy.Subscriber('/zed/right/image_rect_color', Image, self.zed_callback, queue_size=1)
         self.pub = rospy.Publisher('/ackermann_cmd_mux/input/navigation', AckermannDriveStamped, queue_size=1)
@@ -68,6 +74,6 @@ drive = BaseClass()
         
 if __name__ == '__main__':
     while not rospy.is_shutdown():
-    	behave_ins.pipeline()
+    	drive.pipeline()
     rospy.spin()
 
