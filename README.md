@@ -17,6 +17,21 @@ rosrun deep_learning collect_data.py
 
 The data will be saved on /data folder inside of the deep_learning package. You should have training_data.npy file inside the /data folder. This file contains all of the images name and associated speed and angle. 
 
+In order to train your data, first you have to preprocess to your images. Go to ktrain folder and open the ipynb file. 
+```bash
+sudo pip3 install jupyterlab
+jupyter lab preprocess.ipynb
+```
+
+When you are done, copy the augmentation cell and paste it to related section on your **model_trainer.py** file. Then run:
+
+```bash
+cd ~/marc/src/racecar-controllers/marc-examples/ktrain  # Path may be different than yours. 
+python3 model_trainer.py
+```
+
+When the training process is done, h5 file which is your trained network, saved to the current folder. You should 3 new files with the names: __model_new.h5, model_new.json and weights.h5__. You can safely delete the __weights.h5__ file. Copy __model_new.h5__ and __model_new.json__ file to the __~/marc/src/racecar-controllers/marc-examples/deep_learning/scripts__ Path may be differ but these file have to be the same folder with the predict.py script in order to run. 
+
 For driving autonomously:
 ```bash
 rosrun deep_learning predict.py

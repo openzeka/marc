@@ -42,6 +42,9 @@ plt.show()
 # sayısı az olan açıdaki kayıtları listeye yeniden ekleyerek 
 # daha düzgün hale getirmeye çalışıyoruz
 
+# ---------------------------------------------
+# PASTE YOUR AUGMENTATION CODES
+
 nitem = len(images)
 for i in range(nitem):
     if labels[i] > 0.05:
@@ -53,7 +56,8 @@ for i in range(nitem):
             images.append(images[i])
             labels.append(labels[i]) 
 
-
+# END
+# ---------------------------------------------
 
 # İlk histgorama göre daga dengeli sayılabilecek bir dağılıma ulaştık
 # En doğru çözüm değil ama pratik işe yarar bir alternatif
