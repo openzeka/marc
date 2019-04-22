@@ -44,7 +44,7 @@ class seyir_logger:
             self.speed = None
             self.angle = None
             self.cv2_img = None
-            self.zed_camera = rospy.Subscriber('/zed/right/image_rect_color', Image, self.zed_callback)
+            self.zed_camera = rospy.Subscriber('/zed/zed_node/right/image_rect_color', Image, self.zed_callback)
             self.sub = rospy.Subscriber('/ackermann_cmd', AckermannDriveStamped, self.drive_call, queue_size=1)
             self.rate = rospy.Rate(20)
             self.debug = False
@@ -67,7 +67,8 @@ class seyir_logger:
                         print('Speed could not detected!')
                     if self.angle is None:
                         print('Angle could not detected!')
-
+                    if self.debug:
+                        cv2.imshow('Image', self.cv2_img)
                     if not self.cv2_img is None and not self.speed is None and not self.angle is None:
                         fname = self.path+'%05d.jpg'%self.index
                         if self.debug:
@@ -77,14 +78,14 @@ class seyir_logger:
                         self.training_data = np.vstack((self.training_data, generated_data))
 
                         np.save(self.file_name, self.training_data)
-                        cv2.imwrite(fname,self.cv2_img)
+                        cv2.imwrite(fname,self.cv2_img)	
                     self.index += 1
                     
-                except Exception,e:
+                except Exception as e:
                     print('Hang on a sec...',e)
                     pass
                 
-            except CvBridgeError, e:
+            except CvBridgeError as e:
                 print(e)
 	
             
