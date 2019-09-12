@@ -8,6 +8,7 @@ import matplotlib.pylab as plt
 import rospy
 import sys, os
 import json, time, math
+import argparse
 from std_msgs.msg import Float64
 from sensor_msgs.msg import LaserScan, Image, Joy
 from nav_msgs.msg import Odometry
@@ -24,21 +25,24 @@ config = tf.ConfigProto()
 config.gpu_options.per_process_gpu_memory_fraction = 0.5
 K.set_session(tf.Session(config=config))
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--speed', nargs='?', type=float, help='Speed of the car', default=0.5, const=0.5)
+args = parser.parse_args()
+
 class BaseClass(object):
     def __init__(self):
         self.bridge = CvBridge()
         self.out = None
         self.angle = None
-        self.speed = 0.0
+        self.speed = args.speed
         self.rate = rospy.Rate(20)
         self.index = 0
-        self.debug = True
+        self.debug = False
         self.image = None
         self.cropped_pixel_from_top = 100
         self.graph_behavioral = tf.get_default_graph()
         rospack = rospkg.RosPack()
-        self.package_path = rospack.get_path('deep_learning')
-        self.model_name = self.package_path + '/scripts/model_new'
+        self.model_name = os.environ['HOME'] + '/marc_models/model_new'
         self.model = self.nn_model()
         rospy.Subscriber('/zed/zed_node/right/image_rect_color', Image, self.zed_callback, queue_size=1)
         self.pub = rospy.Publisher('/ackermann_cmd_mux/input/navigation', AckermannDriveStamped, queue_size=1)

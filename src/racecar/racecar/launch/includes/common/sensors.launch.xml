@@ -13,6 +13,6 @@
   <include file="$(find zed_wrapper)/launch/zed.launch"/>
 
   <!-- imu -->
-  <include file="$(find racecar)/launch/includes/common/sensors/$(arg imu_model).launch.xml" />
+  <include file="$(find racecar)/launch/includes/common/sensors/razor_imu_m0.launch.xml" />
 
 </launch>
