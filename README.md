@@ -1,40 +1,48 @@
 # Open Zeka MARC Autonomous Car Base Software
 
+First make the bash script executable:
+```bash
+sudo chmod +x start_teleop.sh
+sudo chmod +x collect_data.sh
+sudo chmod +x autonomous.sh
+```
+
 For starting the car:
 ```bash
-source /opt/ros/melodic/setup.bash
-# If you are using zsh
-# source /opt/ros/melodic/setup.zsh
-roslaunch racecar teleop.launch
+cd ~/marc
+./start_teleop.sh
+```
+
+`start_teleop.sh` will check VESC, IMU and LIDAR is successfully connected as a device. if they are not connected, the teleop will not start. You can skip these control with: 
+```bash
+./start_teleop.sh no-check
 ```
 
 This will initialize all nodes. If you encountered an error, please look at the Troubleshooting section. 
 
 For collecting data:
 ```bash
-rosrun deep_learning collect_data.py
+./collect_data.sh
 ```
 
 The data will be saved on /data folder inside of the deep_learning package. You should have training_data.npy file inside the /data folder. This file contains all of the images name and associated speed and angle. 
 
-In order to train your data, first you have to preprocess to your images. Go to ktrain folder and open the ipynb file. 
+In order to train your data, first you have to preprocess and train to your images. Go to ktrain folder and open the ipynb file. 
 ```bash
 sudo pip3 install jupyterlab
-jupyter lab preprocess.ipynb
+jupyter lab model_trainer.ipynb
 ```
 
-When you are done, copy the augmentation cell and paste it to related section on your **model_trainer.py** file. Then run:
-
-```bash
-cd ~/marc/src/racecar-controllers/marc-examples/ktrain  # Path may be different than yours. 
-python3 model_trainer.py
-```
-
-When the training process is done, h5 file which is your trained network, saved to the current folder. You should 3 new files with the names: __model_new.h5, model_new.json and weights.h5__. You can safely delete the __weights.h5__ file. Copy __model_new.h5__ and __model_new.json__ file to the __~/marc/src/racecar-controllers/marc-examples/deep_learning/scripts__ Path may be differ but these file have to be the same folder with the predict.py script in order to run. 
+When the training process is done, h5 file which is your trained network, saved to the `marc_models` folder created on your home folder. You should 2 new files with the names: __model_new.h5 and model_new.json__. The script that will work for autonomous driving will look for models with this name in this directory. 
 
 For driving autonomously:
 ```bash
-rosrun deep_learning predict.py
+./autonomous.sh
+```
+
+This script start the car with the default speed which is 0.5. If you want to determine the speed:
+```bash
+./autonomous.sh 1
 ```
 
 Note that in order to run these nodes, python3 is required. You need to rebuild cv_bridge package for python3. 
