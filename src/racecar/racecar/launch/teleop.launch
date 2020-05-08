@@ -8,5 +8,4 @@
     <arg name="imu_model" value="$(arg imu_model)" />
     <arg name="run_camera" value="$(arg run_camera)" />
   </include>
-
 </launch>

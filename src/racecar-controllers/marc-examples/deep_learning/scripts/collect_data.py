@@ -44,10 +44,10 @@ class seyir_logger:
             self.speed = None
             self.angle = None
             self.cv2_img = None
-            self.zed_camera = rospy.Subscriber('/zed/zed_node/right/image_rect_color', Image, self.zed_callback)
+            self.zed_camera = rospy.Subscriber('/zedm/zed_node/rgb/image_rect_color', Image, self.zed_callback)
             self.sub = rospy.Subscriber('/ackermann_cmd', AckermannDriveStamped, self.drive_call, queue_size=1)
             self.rate = rospy.Rate(20)
-            self.debug = False
+            self.debug = True
         
         def drive_call(self, data):
             if self.debug:

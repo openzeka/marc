@@ -10,7 +10,7 @@
   <!-- laser -->
   <!-- <node pkg="urg_node" type="urg_node" name="laser_node" /> -->
   <include file="$(find rplidar_ros)/launch/rplidar.launch"/>
-  <include file="$(find zed_wrapper)/launch/zed.launch"/>
+  <include file="$(find zed_wrapper)/launch/zedm.launch"/>
 
   <!-- imu -->
   <include file="$(find racecar)/launch/includes/common/sensors/razor_imu_m0.launch.xml" />
